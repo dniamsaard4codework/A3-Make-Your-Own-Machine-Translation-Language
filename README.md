@@ -273,7 +273,7 @@ python app.py
 
 | Dataset | Description | Source |
 |---------|-------------|--------|
-| SCB-MT-EN-TH-2020 | Large-scale English-Thai parallel corpus | [AIRESEARCH / VISTEC]([https://github.com/vistec-AI/dataset-releases/releases/tag/scb-mt-en-th-2020_v1.0](https://airesearch.in.th/releases/machine-translation-datasets/)) |
+| SCB-MT-EN-TH-2020 | Large-scale English-Thai parallel corpus | [AIRESEARCH / VISTEC]([https://github.com/vistec-AI/dataset-releases/releases/tag/scb-mt-en-th-2020_v1.0](https://airesearch.in.th/releases/machine-translation-datasets/)]) |
 
 **Citation**:
 ```bibtex
