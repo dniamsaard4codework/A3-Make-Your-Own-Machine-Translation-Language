@@ -75,7 +75,7 @@ Open http://localhost:5000 in your browser.
 ### What I Chose:
 - **SCB-MT-EN-TH-2020** dataset (`generated_reviews_crowd` subset)
 - Source: [AI Research Institute of Thailand (AIRESEARCH)](https://airesearch.in.th/releases/machine-translation-datasets/)
-- ~10,000 crowd-sourced parallel English-Thai sentence pairs
+- 24587 rows total
 - Natural, conversational text well-suited for neural translation
 
 ### Dataset Preparation:
@@ -90,9 +90,9 @@ Open http://localhost:5000 in your browser.
 
 | Split | Size |
 |-------|------|
-| Training | ~8,000 |
-| Validation | ~1,000 |
-| Test | ~1,000 |
+| Training | 19669 |
+| Validation | 2459 |
+| Test | 2459 |
 
 ### Tokenization:
 
