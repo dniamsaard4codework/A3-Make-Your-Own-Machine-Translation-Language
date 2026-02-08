@@ -1,0 +1,30 @@
+[project]
+name = "a3-make-your-own-machine-translation-language"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "torch>=2.7.0",
+    "datasets>=2.14.0",
+    "tqdm>=4.65.0",
+    "numpy>=1.24.0",
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "flask>=3.0.0",
+    "matplotlib>=3.10.8",
+    "pythainlp>=5.2.0",
+    "pandas>=3.0.0",
+    "spacy>=3.8.11",
+]
+
+[tool.uv]
+index-url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }

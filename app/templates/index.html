@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EN → TH Machine Translation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: #111;
+        }
+
+        .container {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 48px 40px;
+            max-width: 640px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.5em;
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 4px;
+            color: #111;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #999;
+            margin-bottom: 36px;
+            font-size: 0.8em;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .input-group { margin-bottom: 24px; }
+
+        label {
+            display: block;
+            font-size: 0.75em;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 80px;
+            transition: border-color 0.2s;
+            font-family: inherit;
+            color: #222;
+            background: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #111;
+            background: #fff;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            background: #111;
+            color: #fff;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #333; }
+        button:active { background: #000; }
+        button:disabled {
+            background: #bbb;
+            cursor: not-allowed;
+        }
+
+        .result {
+            margin-top: 28px;
+            padding: 20px 24px;
+            background: #fafafa;
+            border-left: 3px solid #111;
+            display: none;
+        }
+
+        .result.visible { display: block; }
+
+        .result-label {
+            font-size: 0.7em;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 8px;
+        }
+
+        .translation-text {
+            font-size: 1.25em;
+            color: #111;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .tokens {
+            margin-top: 14px;
+            font-size: 0.78em;
+            color: #aaa;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        .error {
+            color: #c00;
+            margin-top: 14px;
+            font-size: 0.85em;
+            display: none;
+        }
+
+        .error.visible { display: block; }
+
+        .spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 1.5px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 28px 0 16px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #ccc;
+            font-size: 0.7em;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>EN → TH Translator</h1>
+        <p class="subtitle">Transformer · English to Thai</p>
+
+        <div class="input-group">
+            <label for="sentence">English sentence</label>
+            <textarea id="sentence" placeholder="How are you today?"></textarea>
+        </div>
+
+        <button id="translateBtn" onclick="translateText()">Translate</button>
+
+        <div id="error" class="error"></div>
+
+        <div id="result" class="result">
+            <div class="result-label">Translation</div>
+            <div id="translationText" class="translation-text"></div>
+            <div id="tokens" class="tokens"></div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="footer">
+            SCB-MT-EN-TH-2020 &middot; PyThaiNLP &middot; spaCy<br>
+            Dechathon Niamsa-ard · st126235
+        </div>
+    </div>
+
+    <script>
+        async function translateText() {
+            const sentence = document.getElementById('sentence').value.trim();
+            const btn = document.getElementById('translateBtn');
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+
+            if (!sentence) {
+                errorDiv.textContent = 'Please enter a sentence.';
+                errorDiv.classList.add('visible');
+                resultDiv.classList.remove('visible');
+                return;
+            }
+
+            errorDiv.classList.remove('visible');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>Translating...';
+
+            try {
+                const response = await fetch('/translate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sentence: sentence })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('translationText').textContent = data.translation;
+                    document.getElementById('tokens').textContent =
+                        'src: [' + data.source_tokens.join(', ') + ']  →  trg: [' + data.translation_tokens.join(', ') + ']';
+                    resultDiv.classList.add('visible');
+                } else {
+                    errorDiv.textContent = data.error || 'Translation failed.';
+                    errorDiv.classList.add('visible');
+                    resultDiv.classList.remove('visible');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Connection error: ' + err.message;
+                errorDiv.classList.add('visible');
+                resultDiv.classList.remove('visible');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Translate';
+            }
+        }
+
+        document.getElementById('sentence').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                translateText();
+            }
+        });
+    </script>
+</body>
+</html>

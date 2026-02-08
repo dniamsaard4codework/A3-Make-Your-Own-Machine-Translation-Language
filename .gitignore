@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Large dataset files (exceed GitHub 100MB limit)
+# Keep only the subset used for training (generated_reviews_crowd.csv)
+dataset/scb-mt-en-th-2020/thai_websites.csv
+dataset/scb-mt-en-th-2020/generated_reviews_yn.csv
+dataset/scb-mt-en-th-2020/assorted_government.csv
+dataset/scb-mt-en-th-2020/generated_reviews_translator.csv
+dataset/scb-mt-en-th-2020/task_master_1.csv
+dataset/scb-mt-en-th-2020/wikipedia.csv
+dataset/scb-mt-en-th-2020/paracrawl.csv
